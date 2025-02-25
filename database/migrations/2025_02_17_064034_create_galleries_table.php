@@ -18,9 +18,9 @@ return new class extends Migration
             $table->integer('size')->nullable();
             $table->integer('width')->nullable();
             $table->integer('height')->nullable();
-            // $table->timestamps();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
+            // $table->timestamp('created_at')->useCurrent();
+            // $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

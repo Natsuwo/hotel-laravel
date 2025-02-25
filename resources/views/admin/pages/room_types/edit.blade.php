@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <form class="forms-sample" role="form" method="POST" action="{{ route('admin.room_types.store') }}">
+    <form class="forms-sample" role="form" method="POST" action="{{ route('admin.room_types.update', $record->id) }}">
         @csrf
+        @method('PUT')
         <div class="row">
             <div class="col-md-8 grid-margin stretch-card">
 
@@ -27,10 +28,10 @@
                         <div class="form-group">
                             <label for="bed_type">Bed Type</label>
                             <select class="form-control" id="bed_type" name="bed_type">
-                                <option value="Single" {{ $record->bed_type == 1 ? 'selected' : '' }}>Single</option>
-                                <option value="Double" {{ $record->bed_type == 2 ? 'selected' : '' }}>Double</option>
-                                <option value="Queen" {{ $record->bed_type == 3 ? 'selected' : '' }}>Queen</option>
-                                <option value="King" {{ $record->bed_type == 4 ? 'selected' : '' }}>King</option>
+                                <option value="Single" {{ $record->bed_type == 'Single' ? 'selected' : '' }}>Single</option>
+                                <option value="Double" {{ $record->bed_type == 'Double' ? 'selected' : '' }}>Double</option>
+                                <option value="Queen" {{ $record->bed_type == 'Queen' ? 'selected' : '' }}>Queen</option>
+                                <option value="King" {{ $record->bed_type == 'King' ? 'selected' : '' }}>King</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -74,7 +75,7 @@
                                                 value="{{ $feature->id }}"
                                                 {{ in_array($feature->id, $featuresArray ?? []) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="features-{{ $feature->id }}">
-                                                {!! $feature->description !!}
+                                                {!! $feature->name !!}
                                             </label>
                                         </div>
                                     </div>
@@ -120,7 +121,7 @@
                                                 value="{{ $amenity->id }}"
                                                 {{ in_array($amenity->id, $amenitiesArray ?? []) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="amenities-{{ $amenity->id }}">
-                                                {!! $amenity->description !!}
+                                                {!! $amenity->name !!}
                                             </label>
                                         </div>
                                     </div>
@@ -159,7 +160,13 @@
                                 style="border: 2px dashed #ccc; padding: 20px; text-align: center;"
                                 onclick="$('#galleryModal').modal('show');">
                                 <p>Drag & Drop your files here or click to upload</p>
-                                <div class="d-flex flex-wrap" id="image_preview_container"></div>
+                                <div class="d-flex flex-wrap" id="image_preview_container">
+                                    @foreach ($record->thumbnails as $thumbnail)
+                                        <div class="p-2" style="flex: 0 0 50%;"><img src="{{ $thumbnail['url'] }}"
+                                                style="max-width: 100%; margin: 10px; display: block;"></div>
+                                        <input type="hidden" name="images[]" value="{{ $thumbnail['id'] }}">
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">

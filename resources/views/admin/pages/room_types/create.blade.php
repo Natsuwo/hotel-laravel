@@ -69,7 +69,7 @@
                                                 value="{{ $feature->id }}"
                                                 {{ in_array($feature->id, old('features', [])) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="features-{{ $feature->id }}">
-                                                {!! $feature->description !!}
+                                                {!! $feature->name !!}
                                             </label>
                                         </div>
                                     </div>
@@ -105,7 +105,7 @@
                                                 value="{{ $amenity->id }}"
                                                 {{ in_array($amenity->id, old('amenities', [])) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="amenities-{{ $amenity->id }}">
-                                                {!! $amenity->description !!}
+                                                {!! $amenity->name !!}
                                             </label>
                                         </div>
                                     </div>
@@ -201,7 +201,8 @@
                 }, doneTypingInterval);
             });
 
-            $('#room_title').on('keydown', function() {
+            $('#room_title').on('keydown', function(e) {
+                if (e.key === 'Tab') return;
                 clearTimeout(typingTimer);
             });
         });

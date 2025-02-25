@@ -1,6 +1,7 @@
-@props(['title', 'value', 'percentage', 'is_positive'])
+@props(['title', 'value', 'percentage', 'is_positive', 'icon' => null])
 @php
-    $classes = $is_positive ?? false ? 'mdi mdi-arrow-top-right icon-item' : 'mdi mdi-arrow-bottom-left icon-item';
+    $is_positive = $is_positive == 'true' ? true : false;
+    $classes = $is_positive ? 'mdi mdi-arrow-top-right icon-item' : 'mdi mdi-arrow-bottom-left icon-item';
 @endphp
 
 <div class="card">
@@ -8,7 +9,10 @@
         <div class="row">
             <div class="col-9">
                 <div class="d-flex align-items-center align-self-start">
-                    <h3 class="mb-0">{{ $title }}</h3>
+                    @if ($icon)
+                        <span {{ $attributes->merge(['class' => $icon]) }}></span>
+                    @endif
+                    <p class="mb-0 text-muted{{ $icon ? ' ml-2' : '' }}">{{ $title }}</p>
                     <p class="text-{{ $is_positive ? 'success' : 'danger' }} ml-2 mb-0 font-weight-medium">
                         {{ $percentage }}</p>
                 </div>

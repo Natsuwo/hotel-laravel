@@ -60,3 +60,28 @@
         </div>
     </form>
 @endsection
+
+@section('my-script')
+    <script>
+        document.getElementById('room_number').addEventListener('input', function() {
+            var roomNumber = this.value;
+            var floorSelect = document.getElementById('floor');
+            var roomTypeSelect = document.getElementById('room_type');
+            var floorNumber = Math.floor(roomNumber / 100);
+            var roomTypeIndex = roomNumber % 100;
+
+            if (floorNumber > 0) {
+                for (var i = 0; i < floorSelect.options.length; i++) {
+                    if (floorSelect.options[i].text == floorNumber) {
+                        floorSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (roomTypeIndex > 0 && roomTypeIndex < roomTypeSelect.options.length) {
+                roomTypeSelect.selectedIndex = roomTypeIndex;
+            }
+        });
+    </script>
+@endsection

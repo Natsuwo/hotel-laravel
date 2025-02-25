@@ -13,7 +13,9 @@ class FeatureController extends Controller
     public function index()
     {
         $perPage = 10;
-        $records = DB::table(Feature::TABLE_NAME)->paginate($perPage);
+        $records = DB::table(Feature::TABLE_NAME)
+            ->orderBy('id', 'desc')
+            ->paginate($perPage);
         return view('admin.pages.feature.index', [
             'records' => $records,
         ]);
@@ -28,7 +30,8 @@ class FeatureController extends Controller
     {
         $check = DB::table(Feature::TABLE_NAME)->insert([
             'type' => $request->type,
-            'description' => $request->description,
+            'name' => $request->name,
+            'icon' => $request->icon,
         ]);
 
         return redirect()->route('admin.feature.index')
@@ -45,7 +48,8 @@ class FeatureController extends Controller
             ->where('id', $id)
             ->update([
                 'type' => $request->type,
-                'description' => $request->description,
+                'name' => $request->name,
+                'icon' => $request->icon,
             ]);
 
         return redirect()->route('admin.feature.index')

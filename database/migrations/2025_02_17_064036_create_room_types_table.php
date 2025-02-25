@@ -23,6 +23,7 @@ return new class extends Migration
             $table->float('price_per_night');
             $table->float('price_per_hour');
             $table->integer('discount')->nullable();
+            $table->timestamps();
         });
     }
 

@@ -43,7 +43,7 @@ class FloorController extends Controller
 
         return redirect()->route('admin.floor.index')
             ->with(
-                $check ? 'message' : 'error',
+                $check ? 'success' : 'error',
                 $check ? 'Data updated successfully' : 'Failed to update data'
             );
     }
@@ -70,7 +70,7 @@ class FloorController extends Controller
 
         return redirect()->route('admin.floor.index')
             ->with(
-                $check ? 'message' : 'error',
+                $check ? 'success' : 'error',
                 $check ? 'Data updated successfully' : 'Failed to update data'
             );
     }
@@ -82,7 +82,7 @@ class FloorController extends Controller
 
         return redirect()->route('admin.floor.index')
             ->with(
-                $check ? 'message' : 'error',
+                $check ? 'success' : 'error',
                 $check ? 'Data deleted successfully' : 'Failed to delete data'
             );
     }

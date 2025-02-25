@@ -21,8 +21,8 @@
                 <div class="content-wrapper">
                     <x-error-form :error="$errors"></x-alert>
                         <div class="flash">
-                            @if (Session::has('message'))
-                                <div class="alert alert-success">{{ Session::get('message') }}</div>
+                            @if (Session::has('success'))
+                                <div class="alert alert-success">{{ Session::get('success') }}</div>
                             @elseif (Session::has('error'))
                                 <div class="alert alert-danger">{{ Session::get('error') }}</div>
                             @endif

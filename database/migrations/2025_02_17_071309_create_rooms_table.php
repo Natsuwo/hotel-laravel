@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('room_type_id');
             $table->unsignedBigInteger('floor_id')->nullable();
-            $table->string('room_number', 255);
+            $table->string('room_number', 255)->unique();
             $table->enum('status', ['available', 'occupied', 'maintenance'])->default('available');
             $table->foreign('room_type_id')
                 ->references('id')
@@ -25,9 +25,9 @@ return new class extends Migration
                 ->references('id')
                 ->on('floors')
                 ->onDelete('set null');
-            // $table->timestamps();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
+            // $table->timestamp('created_at')->useCurrent();
+            // $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

@@ -16,6 +16,7 @@
     <!-- inject:css -->
     <!-- endinject -->
     <!-- Layout styles -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin_assets/css/daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('admin_assets/css/style.css') }}">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="{{ asset('admin_assets/images/favicon.png') }}" />

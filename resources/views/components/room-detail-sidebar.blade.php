@@ -53,7 +53,7 @@
             <div class="d-flex">
 
                 @if ($room->thumbnails->count() > 0)
-                    <img src="{{ $room->thumbnails->first() }}" class="img-thumbnail" alt="Room Thumbnail"
+                    <img src="{{ $room->thumbnails->first()['url'] }}" class="img-thumbnail" alt="Room Thumbnail"
                         style="width: 80%; height: 300px; object-fit: cover;">
                 @else
                     <img src="https://placehold.co/300" class="img-thumbnail" alt="Room Thumbnail"
@@ -61,7 +61,7 @@
                 @endif
                 <div class="d-flex flex-column ml-2" style="width: 20%; max-height: 300px; overflow-y: auto;">
                     @foreach ($room->thumbnails->take(3) as $thumbnail)
-                        <img src="{{ $thumbnail }}" class="img-thumbnail mb-1" alt="Thumbnail"
+                        <img src="{{ $thumbnail['url'] }}" class="img-thumbnail mb-1" alt="Thumbnail"
                             style='max-height: 75px; min-height: 75px; object-fit:cover;'>
                     @endforeach
                     <button class="btn btn-link p-0"
@@ -92,7 +92,7 @@
                         @foreach ($room->features as $feature)
                             <div class="d-flex">
                                 <i class="mdi mdi-check-circle text-success mr-2"></i>
-                                <p>{!! $feature->description !!}</p>
+                                <p>{!! $feature->name !!}</p>
                             </div>
                         @endforeach
                     @endif
@@ -115,7 +115,7 @@
                     @foreach ($room->amenities as $amenity)
                         <div class="d-flex">
                             <i class="mdi mdi-check-circle text-success mr-2"></i>
-                            <p>{!! $amenity->description !!}</p>
+                            <p>{!! $amenity->name !!}</p>
                         </div>
                     @endforeach
                 </div>

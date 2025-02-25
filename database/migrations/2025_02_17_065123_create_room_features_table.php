@@ -23,6 +23,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('features')
                 ->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

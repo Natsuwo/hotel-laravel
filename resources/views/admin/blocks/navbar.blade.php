@@ -23,7 +23,7 @@
                     <a class="dropdown-item preview-item" href="{{ route('admin.room_types.create') }}">
                         <div class="preview-thumbnail">
                             <div class="preview-icon bg-dark rounded-circle">
-                                <i class="mdi mdi-hotel text-primary"></i>
+                                <i class="mdi mdi-bed text-primary"></i>
                             </div>
                         </div>
                         <div class="preview-item-content">

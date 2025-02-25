@@ -26,10 +26,11 @@
     }
 
     function chooseFile() {
+        // clear previewContainer
+        const previewContainer = $('#image_preview_container');
+        previewContainer.html('');
         gallerySelected.forEach((image) => {
             if (!image.id) return;
-
-            var previewContainer = $('#image_preview_container');
             var input = $('<input>').attr('type', 'hidden').attr('name', 'images[]').val(image.id);
             $('#drop-area').append(input);
             previewContainer.append(

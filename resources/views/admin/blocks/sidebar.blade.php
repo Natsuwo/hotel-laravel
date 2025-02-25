@@ -67,9 +67,36 @@
             </a>
         </li>
         <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('admin.reservation.index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-calendar"></i>
+                </span>
+                <span class="menu-title">Reservation</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" data-toggle="collapse" href="#ui-guests" aria-expanded="false"
+                aria-controls="ui-guests">
+                <span class="menu-icon">
+                    <i class="mdi mdi-account-multiple"></i>
+                </span>
+                <span class="menu-title">Members</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-guests">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.guest.index') }}">Guests</a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link"
+                            href="{{ route('admin.guest_membership.index') }}">Memberships</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item menu-items">
             <a class="nav-link" data-toggle="collapse" href="#ui-room" aria-expanded="false" aria-controls="ui-room">
                 <span class="menu-icon">
-                    <i class="mdi mdi-hotel"></i>
+                    <i class="mdi mdi-bed"></i>
                 </span>
                 <span class="menu-title">Room</span>
                 <i class="menu-arrow"></i>
@@ -82,25 +109,6 @@
                     </li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('admin.room_types.create') }}">New Room
                             Type</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-        <li class="nav-item menu-items">
-            <a class="nav-link" data-toggle="collapse" href="#ui-facility" aria-expanded="false"
-                aria-controls="ui-facility">
-                <span class="menu-icon">
-                    <i class="mdi mdi-pool"></i>
-                </span>
-                <span class="menu-title">Facility</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-facility">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.facility.index') }}">All</a>
-                    </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.facility.create') }}">Add
-                            Facility</a>
                     </li>
                 </ul>
             </div>
@@ -139,6 +147,43 @@
                     </li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('admin.floor.create') }}">Add
                             Floor</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('admin.housekeeping.index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-broom"></i>
+                </span>
+                <span class="menu-title">Housekeeping</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('admin.event_calendar.index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-calendar"></i>
+                </span>
+                <span class="menu-title">Calendar</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" data-toggle="collapse" href="#ui-financials" aria-expanded="false"
+                aria-controls="ui-financials">
+                <span class="menu-icon">
+                    <i class="mdi mdi-cash"></i>
+                </span>
+                <span class="menu-title">Financials</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-financials">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.invoice.index') }}">Invoice</a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.expense.index') }}">Expenses</a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link"
+                            href="{{ route('admin.transaction.index') }}">Transations</a>
                     </li>
                 </ul>
             </div>

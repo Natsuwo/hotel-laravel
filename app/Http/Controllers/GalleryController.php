@@ -63,7 +63,7 @@ class GalleryController extends Controller
         ])->render();
 
         return response()->json([
-            'message' => 'Upload successful!',
+            'success' => 'Upload successful!',
             'html' => $html,
         ]);
     }

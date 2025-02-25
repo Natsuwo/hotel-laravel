@@ -14,7 +14,8 @@
                             <tr>
                                 <th>#</th>
                                 <th>Type</th>
-                                <th>Description</th>
+                                <th>Name</th>
+                                <th>Icon</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -23,7 +24,8 @@
                                 <tr>
                                     <td>{{ $feature->id }}</td>
                                     <td>{{ $feature->type }}</td>
-                                    <td>{!! $feature->description !!}</td>
+                                    <td>{!! $feature->name !!}</td>
+                                    <td><i class="{{ $feature->icon }}"></i></td>
                                     <td>
                                         <a href="{{ route('admin.feature.edit', $feature->id) }}"
                                             class="btn btn-primary btn-sm">Edit</a>
