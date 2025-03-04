@@ -24,8 +24,16 @@
             </div>
             <div class="form-group">
                 <label for="category">Category</label>
-                <input type="text" name="category" id="category" class="form-control" value="{{ old('category') }}"
-                    placeholder="Salary">
+                <select name="category" id="category" class="form-control">
+                    <option value="sales" data-type="income">Sales</option>
+                    <option value="booking" data-type="income">Booking</option>
+                    <option value="salary" data-type="expense">Salary</option>
+                    <option value="rent" data-type="expense">Rent</option>
+                    <option value="utilities" data-type="expense">Utilities</option>
+                    <option value="supplies" data-type="expense">Supplies</option>
+                    <option value="equipment" data-type="expense">Equipment</option>
+                    <option value="other" data-type="income,expense">Other</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
@@ -35,9 +43,34 @@
         </form>
     </div>
 @endsection
+
 @include('admin.blocks.froala_script')
+
 @section('my-script')
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const typeSelect = document.getElementById("type");
+            const categorySelect = document.getElementById("category");
+
+            function filterCategories() {
+                const selectedType = typeSelect.value;
+                Array.from(categorySelect.options).forEach(option => {
+                    const dataType = option.getAttribute("data-type");
+
+                    if (dataType.includes(selectedType) || dataType === "income,expense") {
+                        option.hidden = false;
+                    } else {
+                        option.hidden = true;
+                    }
+                });
+                if (categorySelect.selectedOptions[0].hidden) {
+                    categorySelect.value = categorySelect.querySelector("option:not([hidden])").value;
+                }
+            }
+            typeSelect.addEventListener("change", filterCategories);
+            filterCategories();
+        });
+
         new FroalaEditor('#description');
     </script>
 @endsection

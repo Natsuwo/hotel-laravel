@@ -1,8 +1,35 @@
 @extends('admin.layouts.master')
 @section('content')
-    <div id="calendar"></div>
+    <div class="row">
+        <div class="col-3 mt-5">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Event Categories</h5>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" style="background-color: rgb(25, 28, 36); color: #ffffff;">
+                        <span class="badge badge-danger" style="background-color: #dc3545;">&nbsp;</span> Event
+                    </li>
+                    <li class="list-group-item" style="background-color: rgb(25, 28, 36); color: #ffffff;">
+                        <span class="badge badge-success" style="background-color: #28a745;">&nbsp;</span> Guest service
+                    </li>
+                    <li class="list-group-item" style="background-color: rgb(25, 28, 36); color: #ffffff;">
+                        <span class="badge badge-primary" style="background-color: #007bff;">&nbsp;</span> Meeting
+                    </li>
+                    <li class="list-group-item" style="background-color: rgb(25, 28, 36); color: #ffffff;">
+                        <span class="badge badge-warning" style="background-color: #ffc107;">&nbsp;</span> Maintainance
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
     <!-- Create Event Modal -->
-    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -100,10 +127,10 @@
         }
 
         :root {
-            --main-page-bg-color: #38425e;
+            --main-page-bg-color: rgb(25, 28, 36);
             --fc-small-font-size: .85em;
-            --fc-page-bg-color: #38425e;
-            --fc-neutral-bg-color: #38425e;
+            --fc-page-bg-color: rgb(25, 28, 36);
+            --fc-neutral-bg-color: rgb(25, 28, 36);
             --fc-neutral-text-color: #f8f9fa;
             --fc-border-color: #dee2e6;
 

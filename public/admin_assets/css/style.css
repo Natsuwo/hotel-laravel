@@ -24833,6 +24833,7 @@ code {
 .wizard > .actions a:not(.btn-light):not(.btn-secondary) {
     color: #ffffff;
     background-color: #38425e;
+    border: 1px solid #1b1f2b;
 }
 .btn-primary:not(.btn-light):not(.btn-secondary):hover,
 .wizard > .actions a:not(.btn-light):not(.btn-secondary):hover,

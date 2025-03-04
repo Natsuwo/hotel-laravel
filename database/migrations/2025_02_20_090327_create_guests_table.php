@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('gender', 10)->nullable();
             $table->date('dob')->nullable();
             $table->string('email', 100)->unique();
-            $table->string('phone', 20)->nullable();
+            $table->string('provider', 100)->nullable(); // google, facebook, etc
+            $table->string('password', 255)->nullable();
+            $table->string('phone', 20)->unique();
             $table->string('address', 255)->nullable();
             $table->string('nationality', 100)->nullable();
             $table->string('passport', 100)->nullable();

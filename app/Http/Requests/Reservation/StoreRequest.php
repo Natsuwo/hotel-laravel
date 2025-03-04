@@ -30,7 +30,7 @@ class StoreRequest extends FormRequest
             'adults' => 'required|numeric',
             'child' => 'numeric|nullable',
             'notes' => 'string|nullable',
-            'status' => 'required|in:0,1,2,3', // 0: pending, 1: confirm, 2: rejected, 3: cancelled
+            'status' => 'nullable|in:0,1,2,3', // 0: pending, 1: confirm, 2: rejected, 3: cancelled
         ];
     }
 }

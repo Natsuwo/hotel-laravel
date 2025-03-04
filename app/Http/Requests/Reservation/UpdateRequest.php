@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Reservation;
 
-class UpdateRequest extends StoreRequest
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,7 +22,8 @@ class UpdateRequest extends StoreRequest
     public function rules(): array
     {
         return [
-            //
+            'check_in' => 'date|required',
+            'check_out' => 'date|required',
         ];
     }
 }

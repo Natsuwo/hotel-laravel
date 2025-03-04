@@ -79,7 +79,34 @@
     </div>
 
     <div class="mt-4">
-        {{ $records->links('pagination::bootstrap-4') }}
+        @if ($isModel ?? true)
+            <div id="pagination-links">
+                {{ $records->links('pagination::bootstrap-4') }}
+            </div>
+        @else
+            <div id="pagination-links">
+                <ul class="pagination">
+                    <li class="page-item {{ $records->onFirstPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="javascript:void(0);"
+                            onclick="loadGalleryModalContent({{ $records->currentPage() - 1 }})" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    @for ($i = 1; $i <= $records->lastPage(); $i++)
+                        <li class="page-item {{ $i == $records->currentPage() ? 'active' : '' }}">
+                            <a class="page-link" href="javascript:void(0);"
+                                onclick="loadGalleryModalContent({{ $i }})">{{ $i }}</a>
+                        </li>
+                    @endfor
+                    <li class="page-item {{ $records->currentPage() == $records->lastPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="javascript:void(0);"
+                            onclick="loadGalleryModalContent({{ $records->currentPage() + 1 }})" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        @endif
     </div>
 </div>
 

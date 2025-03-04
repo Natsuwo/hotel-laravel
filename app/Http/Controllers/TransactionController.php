@@ -14,7 +14,7 @@ class TransactionController extends Controller
     public function index()
     {
         $perPage = 10;
-        $transactions = Transaction::orderBy('transaction_date', 'desc')->paginate($perPage);
+        $transactions = Transaction::orderBy('id', 'desc')->paginate($perPage);
         return view('admin.pages.transaction.index', compact('transactions'));
     }
 

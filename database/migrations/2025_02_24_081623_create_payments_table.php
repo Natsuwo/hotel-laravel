@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('invoice_id');
-            $table->decimal('amount', 15, 2);
             $table->enum('status', ['paid', 'unpaid', 'failed', 'cancelled', 'refunded']);
             $table->enum('payment_method', ['cash', 'card', 'paypal', 'momo', 'bank_transfer', 'vnpay']);
             $table->string('transaction_id', 255)->unique();

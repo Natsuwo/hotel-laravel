@@ -139,20 +139,8 @@
                         <h4 class="card-title">Upload Room Image</h4>
 
                         <!-- Modal for Gallery -->
-                        <div class="modal fade" id="galleryModal" tabindex="-1" role="dialog"
-                            aria-labelledby="galleryModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content" style="max-height: 90%; overflow-y: auto;">
-                                    <div class="modal-footer" style="z-index: 2;">
-                                        <button type="button" class="btn btn-success" onclick="chooseFile()"
-                                            data-dismiss="modal">Accept</button>
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
+                        <x-gallery-modal id="galleryModal"></x-gallery-modal>
 
-                            </div>
-                        </div>
 
                         <div class="form-group select-image">
                             <label>Room Images</label>

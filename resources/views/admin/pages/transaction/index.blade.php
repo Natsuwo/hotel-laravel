@@ -26,7 +26,11 @@
                             <td>{{ $transaction->id }}</td>
                             <td>{{ $transaction->transaction_date }}</td>
                             <td>${{ $transaction->amount }}</td>
-                            <td>{{ $transaction->type }}</td>
+                            <td>
+                                <span class="badge {{ $transaction->type == 'income' ? 'badge-success' : 'badge-danger' }}">
+                                    {{ ucfirst($transaction->type) }}
+                                </span>
+                            </td>
                             <td>{{ $transaction->category }}</td>
                             <td>{!! $transaction->description !!}</td>
                             <td>

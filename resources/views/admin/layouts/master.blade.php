@@ -38,6 +38,7 @@
 
     @include('admin.blocks.script')
     @yield('my-script')
+    @stack('scripts')
 </body>
 
 </html>

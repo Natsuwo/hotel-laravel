@@ -20,7 +20,14 @@ class UpdateRequest extends StoreRequest
     public function rules(): array
     {
         return [
-            'uid' => 'nullable|string|max:255',
+            'name' => 'required|string',
+            'phone' => 'required|string',
+            'nationality' => 'required|string',
+            'address' => 'nullable|string',
+            'passport' => 'nullable|string',
+            'gender' => 'nullable|string',
+            'dob' => 'nullable|date',
+            'avatar' => 'nullable|string|url',
         ];
     }
 }

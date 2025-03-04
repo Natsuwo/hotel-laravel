@@ -25,6 +25,11 @@ class Invoices extends Model
         return $this->belongsTo(Reservations::class, 'booking_id');
     }
 
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'invoice_id');
+    }
+
     public function guest()
     {
         return $this->belongsTo(Guests::class, 'guest_id');

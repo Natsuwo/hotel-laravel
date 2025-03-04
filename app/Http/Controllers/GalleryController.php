@@ -9,12 +9,21 @@ use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $perPage = 12;
+        $perPage = $request->limit ?? 12;
         $records = DB::table(Gallery::TABLE_NAME)
             ->orderBy('id', 'desc')
             ->paginate($perPage);
+
+        if (request()->is('api/*')) {
+            $records = $records->map(function ($record) {
+                $record->url = Storage::disk('r2')->temporaryUrl($record->path, now()->addMinutes(5));
+                return $record;
+            });
+            return response()->json(['success' => true, 'data' => $records]);
+        }
+
         return view('admin.pages.gallery.index', [
             'records' => $records,
         ]);
@@ -103,6 +112,8 @@ class GalleryController extends Controller
                 'image' => $record,
                 'url' => $record->path,
                 'selectable' => true,
+                'isChoose' => true,
+                'isModal' => true,
             ])->render();
         }
 
@@ -114,13 +125,18 @@ class GalleryController extends Controller
     public function modal()
     {
         $perPage = 12;
-        $records = DB::table(Gallery::TABLE_NAME)
-            ->orderBy('id', 'desc')
-            ->paginate($perPage);
+        $query = DB::table(Gallery::TABLE_NAME)->orderBy('id', 'desc');
+
+        if ($search = request()->query('search')) {
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+
+        $records = $query->paginate($perPage);
 
         $html = view('admin.pages.gallery.modal', [
             'records' => $records,
             'isChoose' => true,
+            'isModal' => true,
         ])->render();
 
         return response()->json([

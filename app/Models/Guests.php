@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Guests extends Model
+class Guests extends Authenticatable implements JWTSubject
 {
+    use Notifiable;
     protected $table = 'guests';
     protected $fillable = [
         'uid',
@@ -13,12 +16,25 @@ class Guests extends Model
         'gender',
         'dob',
         'email',
+        'password',
         'phone',
         'address',
         'nationality',
         'passport',
         'avatar',
+        'provider'
     ];
+    protected $hidden = ['password'];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 
     static function generateUid()
     {

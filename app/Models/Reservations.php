@@ -27,7 +27,7 @@ class Reservations extends Model
 
     public function invoice()
     {
-        return $this->hasOne(Invoices::class, 'booking_id');
+        return $this->hasMany(Invoices::class, 'booking_id');
     }
 
     public function room()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRoomTypeRequest;
+use App\Models\Rooms;
 use App\Models\RoomTypes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -97,6 +98,8 @@ class RoomTypesController extends Controller
     {
         $search = request()->query('search') ?? '';
         $filter = request()->query('filter');
+        $check_in = request()->query('check_in');
+        $check_out = request()->query('check_out');
         $roomsQuery = DB::table('room_types');
         $perPage = 20;
 
@@ -122,7 +125,34 @@ class RoomTypesController extends Controller
         } else {
             if ($search) {
                 $roomsQuery->where('title', 'like', "%$search%");
+            } else if ($check_in && $check_out) {
+                $reservations = DB::table('reservations')
+                    ->where(function ($query) use ($check_in, $check_out) {
+                        $query->whereBetween('check_in', [$check_in, $check_out])
+                            ->orWhereBetween('check_out', [$check_in, $check_out])
+                            ->orWhere(function ($query) use ($check_in, $check_out) {
+                                $query->where('check_in', '<=', $check_in)
+                                    ->where('check_out', '>=', $check_out);
+                            });
+                    })
+                    ->get();
+
+                $roomIds = $reservations->pluck('room_id')->unique();
+
+                $reservedRoomIds = $roomsQuery->get()->filter(function ($item) use ($roomIds) {
+                    $rooms = DB::table('rooms')->where('room_type_id', $item->id);
+                    $total = $rooms->count();
+                    $roomOccupied = $rooms->whereIn('id', $roomIds)->count();
+                    // if ($item->title == 'Presidential') {
+                    //     dd($total, $roomOccupied);
+                    // }
+                    return $total === $roomOccupied;
+                })->pluck('id');
+
+
+                $roomsQuery->whereNotIn('id', $reservedRoomIds);
             }
+
             $rooms = $roomsQuery->get();
             $rooms->each(function ($room) {
                 $room->available_rooms = DB::table('rooms')
@@ -166,16 +196,79 @@ class RoomTypesController extends Controller
             });
         }
 
-
-
+        if (request()->is('api/*')) {
+            return response()->json(['success' => true, 'data' => $rooms]);
+        }
         return view('admin.pages.room_types.index', compact('rooms'));
     }
 
     public function getRoomById($id)
     {
-        $room = DB::table('room_types')->where('id', $id)->first();
+        // $room = DB::table('room_types')->where('id', $id)
+        //     ->orWhere('slug', $id)
+        //     ->first();
+        $room = Rooms::where('id', $id)
+            ->with('roomType')
+            ->first();
         $room->available_rooms = DB::table('rooms')
-            ->where('room_type_id', $room->id)
+            ->where('room_type_id', $room?->room_type_id)
+            ->where('status', 'available')
+            ->count();
+        $room->total_rooms = DB::table('rooms')
+            ->where('room_type_id', $room->room_type_id)
+            ->count();
+
+        $room->thumbnails = DB::table('room_galleries')
+            ->where('room_type_id', $room->room_type_id)
+            ->get()
+            ->map(function ($record) {
+                $gallery = DB::table('galleries')->where('id', $record->gallery_id)->first();
+                if (!$gallery) return null;
+                $disk = Storage::disk('r2'); // Assuming you are using S3
+                $gallery->path = $disk->temporaryUrl($gallery->path, now()->addMinutes(5));
+                return [
+                    'id' => $gallery->id,
+                    'url' => $gallery->path
+                ];
+            });
+
+        $room->facilities = DB::table('room_facilities')
+            ->where('room_type_id', $room->room_type_id)
+            ->get()
+            ->map(function ($record) {
+                return DB::table('features')->where('id', $record->feature_id)->first();
+            });
+
+        $room->amenities = DB::table('room_amenities')
+            ->where('room_type_id', $room->room_type_id)
+            ->get()
+            ->map(function ($record) {
+                return DB::table('features')->where('id', $record->feature_id)->first();
+            });
+        $room->features = DB::table('room_features')
+            ->where('room_type_id', $room->room_type_id)
+            ->get()
+            ->map(function ($record) {
+                return DB::table('features')->where('id', $record->feature_id)->first();
+            });
+
+        if (request()->is('api/*')) {
+            return response()->json(['success' => true, 'data' => $room]);
+        }
+        $result = view('components.room-detail-sidebar', ['room' => $room])->render();
+        return response()->json(['html' => $result]);
+    }
+
+    public function getRoomTypesById($id)
+    {
+        $room = DB::table('room_types')->where('id', $id)
+            ->orWhere('slug', $id)
+            ->first();
+        // $room = Rooms::where('id', $id)
+        //     ->with('roomType')
+        //     ->first();
+        $room->available_rooms = DB::table('rooms')
+            ->where('room_type_id', $room?->id)
             ->where('status', 'available')
             ->count();
         $room->total_rooms = DB::table('rooms')
@@ -215,6 +308,10 @@ class RoomTypesController extends Controller
             ->map(function ($record) {
                 return DB::table('features')->where('id', $record->feature_id)->first();
             });
+
+        if (request()->is('api/*')) {
+            return response()->json(['success' => true, 'data' => $room]);
+        }
         $result = view('components.room-detail-sidebar', ['room' => $room])->render();
         return response()->json(['html' => $result]);
     }

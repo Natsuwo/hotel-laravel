@@ -16,11 +16,11 @@ return new class extends Migration
             $table->unsignedBigInteger('guest_id');
             $table->unsignedBigInteger('room_id');
             $table->unsignedBigInteger('booking_id');
-            $table->unsignedBigInteger('price_per_night');
-            $table->unsignedBigInteger('extras')->nullable();
-            $table->unsignedInteger('vat');
-            $table->unsignedInteger('tax');
-            $table->unsignedBigInteger('amount');
+            $table->float('price_per_night');
+            $table->float('extras')->nullable();
+            $table->float('vat');
+            $table->float('tax');
+            $table->float('amount');
             $table->unsignedBigInteger('coupon_id')->nullable();
             $table->enum('status', ['paid', 'unpaid', 'partial', 'cancelled', 'refunded']);
             $table->foreign('guest_id')

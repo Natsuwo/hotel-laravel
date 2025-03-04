@@ -34,3 +34,6 @@ require __DIR__ . '/guest_membership.php';
 require __DIR__ . '/housekeeping.php';
 require __DIR__ . '/invoice.php';
 require __DIR__ . '/event_calendar.php';
+require __DIR__ . '/inventory.php';
+require __DIR__ . '/setting.php';
+require __DIR__ . '/message.php';
