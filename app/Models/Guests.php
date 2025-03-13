@@ -48,10 +48,11 @@ class Guests extends Authenticatable implements JWTSubject
     public function guestMembership()
     {
         return $this->hasOne(self::class, 'id')
-            ->join('guest_memberships', function ($join) {
+            ->leftJoin('guest_memberships', function ($join) {
                 $join->on('guests.point', '>=', 'guest_memberships.point_required')
                     ->whereRaw('guest_memberships.point_required = (select max(point_required) from guest_memberships where guests.point >= point_required)');
             })
+            ->select('guest_memberships.*')
             ->first();
     }
 }

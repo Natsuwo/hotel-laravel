@@ -27,6 +27,6 @@ class Gallery extends Model
 
     public function thumbUrl()
     {
-        return Storage::disk('r2')->temporaryUrl($this->path, now()->addMinutes(5));
+        return Storage::disk('r2')->temporaryUrl($this->path, now()->addMinutes(15));
     }
 }

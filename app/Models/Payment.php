@@ -20,4 +20,12 @@ class Payment extends Model
     {
         return $this->belongsTo(Invoices::class, 'invoice_id');
     }
+
+    public function plusPoint($amount)
+    {
+        $guestId = $this->invoice->guest_id;
+        $guest = Guests::find($guestId);
+        $guest->point += $amount;
+        $guest->save();
+    }
 }

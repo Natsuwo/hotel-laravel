@@ -45,4 +45,41 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function meta()
+    {
+        return $this->hasMany(UserMeta::class, 'user_id');
+    }
+
+    public function userRole()
+    {
+        return $this->hasOne(UserRoles::class, 'user_id');
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Roles::class, 'user_roles', 'user_id', 'role_id');
+    }
+
+    public function isAdmin()
+    {
+        return $this->roles()->where('priority', '>=', 100)->exists();
+    }
+
+    public function roleAccess($role)
+    {
+        $rolePriorities = [
+            'admin' => 100,
+            'manager' => 80,
+            'concierge' => 50,
+            'writer' => 25,
+            'housekeeping' => 10,
+        ];
+
+        if (!isset($rolePriorities[$role])) {
+            return false;
+        }
+
+        return $this->roles()->where('priority', '>=', $rolePriorities[$role])->exists();
+    }
 }

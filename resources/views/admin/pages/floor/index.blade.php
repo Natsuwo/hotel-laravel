@@ -23,10 +23,9 @@
                                     <td>{{ $floor->id }}</td>
                                     <td>{{ $floor->floor_number }}</td>
                                     <td>
-                                        <a href="{{ route('admin.floor.detail', $floor->id) }}"
-                                            class="btn btn-primary">Edit</a>
+                                        <a href="{{ route('admin.floor.edit', $floor->id) }}" class="btn btn-primary">Edit</a>
 
-                                        <form action="{{ route('admin.floor.delete', $floor->id) }}" method="POST"
+                                        <form action="{{ route('admin.floor.destroy', $floor->id) }}" method="POST"
                                             class="d-inline">
                                             @csrf
                                             @method('DELETE')

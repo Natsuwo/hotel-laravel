@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TaxonomiesCategory;
 
 class TaxonomiesCategories extends Controller
 {
@@ -11,7 +12,9 @@ class TaxonomiesCategories extends Controller
      */
     public function index()
     {
-        //
+        $perPage = 10;
+        $categories = TaxonomiesCategory::paginate($perPage);
+        return view('admin.pages.blog.category.index', compact('categories'));
     }
 
     /**
@@ -19,7 +22,13 @@ class TaxonomiesCategories extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.pages.blog.category.create');
+    }
+
+    public function slug(Request $request)
+    {
+        $slug = TaxonomiesCategory::makeSlug($request->name);
+        return response()->json(['slug' => $slug]);
     }
 
     /**
@@ -27,7 +36,18 @@ class TaxonomiesCategories extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        TaxonomiesCategory::create([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'description' => $request->description,
+        ]);
+        return redirect()->route('admin.taxonomy-category.index');
     }
 
     /**
@@ -35,7 +55,21 @@ class TaxonomiesCategories extends Controller
      */
     public function show(string $id)
     {
-        //
+        $category = TaxonomiesCategory::where('id', $id)
+            ->orWhere('slug', $id)
+            ->with('blogCategories.blog.gallery')
+            ->first();
+
+        $category->blogCategories->each(function ($blogCategory) {
+            $blogCategory->thumbnail = $blogCategory->blog->gallery->thumbUrl();
+            return $blogCategory;
+        });
+
+        if (request()->is('api/*')) {
+            return response()->json(['success' => true, 'data' => $category]);
+        }
+
+        return view('admin.pages.blog.category.show', compact('category'));
     }
 
     /**
@@ -43,7 +77,8 @@ class TaxonomiesCategories extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $category = TaxonomiesCategory::findOrFail($id);
+        return view('admin.pages.blog.category.edit', compact('category'));
     }
 
     /**
@@ -51,7 +86,19 @@ class TaxonomiesCategories extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $category = TaxonomiesCategory::findOrFail($id);
+        $category->update([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'description' => $request->description,
+        ]);
+        return redirect()->route('admin.taxonomy-category.index');
     }
 
     /**
@@ -59,6 +106,8 @@ class TaxonomiesCategories extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $category = TaxonomiesCategory::findOrFail($id);
+        $category->delete();
+        return redirect()->route('admin.taxonomy-category.index');
     }
 }

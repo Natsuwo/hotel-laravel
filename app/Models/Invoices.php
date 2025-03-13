@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invoices extends Model
 {
+    protected $appends = ['discount_coupon', 'subamount'];
     protected $table = 'invoices';
     protected $fillable = [
         'guest_id',
@@ -13,7 +14,9 @@ class Invoices extends Model
         'booking_id',
         'coupon_id',
         'price_per_night',
+        'nights',
         'extras',
+        'discount',
         'vat',
         'tax',
         'amount',
@@ -42,7 +45,7 @@ class Invoices extends Model
 
     public function coupon()
     {
-        return $this->belongsTo(Coupons::class, 'coupon_code', 'code');
+        return $this->belongsTo(Coupons::class, 'coupon_id');
     }
 
     static function createInvoice($data)
@@ -53,6 +56,8 @@ class Invoices extends Model
             'booking_id' => $data['booking_id'],
             'coupon_id' => $data['coupon_id'],
             'price_per_night' => $data['price_per_night'],
+            'nights' => $data['nights'],
+            'discount' => $data['discount'],
             'extras' => $data['extras'],
             'vat' => $data['vat'],
             'tax' => $data['tax'],
@@ -60,5 +65,37 @@ class Invoices extends Model
             'status' => $data['status'],
         ]);
         return $invoice;
+    }
+
+    static function calculateSubAmount(Invoices $invoice)
+    {
+        // subamount = (price_per_night * nights) + vax + tax + extras
+        $subamount = ($invoice->price_per_night * $invoice->nights) + $invoice->vat + $invoice->tax + $invoice->extras;
+        return $subamount;
+    }
+
+    public function getDiscountCouponAttribute()
+    {
+        $this->calulateCoupon();
+        return $this->coupon_discount ?? 0;
+    }
+
+    public function getSubamountAttribute()
+    {
+        $this->calulateCoupon();
+        return $this->attributes['subamount'] ?? $this->amount;
+    }
+
+    public function calulateCoupon()
+    {
+        $coupon = $this->coupon;
+        $subamount = $this->calculateSubAmount($this);
+        $this->attributes['subamount'] = $subamount;
+        if ($coupon) {
+            $this->attributes['coupon_discount'] = round($subamount - $this->amount, 2);
+        } else {
+            $this->attributes['coupon_discount'] = 0;
+        }
+        return $this;
     }
 }

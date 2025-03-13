@@ -19,15 +19,15 @@
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
-                    <x-error-form :error="$errors"></x-alert>
-                        <div class="flash">
-                            @if (Session::has('success'))
-                                <div class="alert alert-success">{{ Session::get('success') }}</div>
-                            @elseif (Session::has('error'))
-                                <div class="alert alert-danger">{{ Session::get('error') }}</div>
-                            @endif
-                        </div>
-                        @yield('content')
+                    <x-error-form :error="$errors"></x-error-form>
+                    <div class="flash">
+                        @if (Session::has('success'))
+                            <div class="alert alert-success">{{ Session::get('success') }}</div>
+                        @elseif (Session::has('error'))
+                            <div class="alert alert-danger">{{ Session::get('error') }}</div>
+                        @endif
+                    </div>
+                    @yield('content')
                 </div>
                 @include('admin.blocks.footer')
             </div>

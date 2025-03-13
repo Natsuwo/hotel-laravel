@@ -83,10 +83,9 @@
                                                     <x-tag-status status="{{ $room->status }}" />
                                                 </td>
                                                 <td class="d-flex gap-1">
-                                                    <a href="{{ route('admin.room.edit', ['id' => $room->room_id]) }}"
+                                                    <a href="{{ route('admin.room.edit', $room->room_id) }}"
                                                         class="btn btn-primary">Edit</a>
-                                                    <form
-                                                        action="{{ route('admin.room.destroy', ['id' => $room->room_id]) }}"
+                                                    <form action="{{ route('admin.room.destroy', $room->room_id) }}"
                                                         method="POST"
                                                         onsubmit="return confirm(`Are you sure you want to delete room {{ $room->room_number }}?` );">
                                                         @csrf

@@ -55,7 +55,7 @@ class RoomController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('admin.room.edit', ['id' => $id])
+        return redirect()->route('admin.room.edit', $id)
             ->with(
                 $check ? 'success' : 'error',
                 $check ? 'Update room successfully' : 'Update room failed'
@@ -72,7 +72,7 @@ class RoomController extends Controller
             );
     }
 
-    public function getRooms(Request $request)
+    public function getRoom(Request $request)
     {
         $search = $request->query('name');
         $rooms = DB::table('rooms')

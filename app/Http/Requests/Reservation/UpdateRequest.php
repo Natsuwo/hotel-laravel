@@ -24,6 +24,18 @@ class UpdateRequest extends FormRequest
         return [
             'check_in' => 'date|required',
             'check_out' => 'date|required',
+            'duration' => 'numeric|required',
+            'total_price' => 'numeric|required',
+            'tax_price' => 'numeric|required',
+            'vat_price' => 'numeric|required',
+            'coupon_id' => 'numeric|nullable|exists:coupons,id',
+            'room_id' => 'numeric|nullable|exists:rooms,id',
+            'guest_id' => 'numeric|nullable|exists:guests,id',
+            'adults' => 'numeric|nullable',
+            'children' => 'numeric|nullable',
+            'status' => 'in:0,1,2,3|nullable',
+            'notes' => 'string|nullable',
+
         ];
     }
 }

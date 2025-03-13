@@ -48,7 +48,7 @@ class FloorController extends Controller
             );
     }
 
-    public function detail($id)
+    public function edit($id)
     {
         $record = DB::table('floors')->where('id', $id)->first();
         return view('admin.pages.floor.detail', [
@@ -75,9 +75,8 @@ class FloorController extends Controller
             );
     }
 
-    public function delete($id)
+    public function destroy(string $id)
     {
-        $id = request('id');
         $check = DB::table('floors')->where('id', $id)->delete();
 
         return redirect()->route('admin.floor.index')

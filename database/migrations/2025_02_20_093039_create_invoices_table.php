@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('booking_id');
             $table->float('price_per_night');
             $table->float('extras')->nullable();
+            $table->unsignedInteger('nights');
+            $table->float('discount')->nullable();
             $table->float('vat');
             $table->float('tax');
             $table->float('amount');

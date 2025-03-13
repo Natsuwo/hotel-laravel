@@ -35,6 +35,13 @@ class GuestsController extends Controller
         return view('admin.pages.guest.index', compact('guests'));
     }
 
+    public function getMemberShip(string $id)
+    {
+        $guest = Guests::find($id);
+        $membership = $guest->guestMembership();
+        return response()->json($membership);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -123,7 +130,9 @@ class GuestsController extends Controller
 
     public function me()
     {
-        return response()->json(Auth::guard('guest')->user());
+        $guest = Auth::guard('guest')->user();
+        $guest->membership = $guest->guestMembership();
+        return response()->json($guest);
     }
 
     public function logout()

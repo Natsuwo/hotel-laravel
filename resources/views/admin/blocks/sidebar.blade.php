@@ -9,6 +9,45 @@
             <div class="profile-desc">
                 <div class="profile-pic">
                     <div class="count-indicator">
+                        <x-ui-avatar class="img-xs rounded-circle" :user="$user" />
+                        <span class="count bg-success"></span>
+                    </div>
+                    <div class="profile-name">
+                        <h5 class="mb-0 font-weight-normal">{{ $user->name }}</h5>
+                        <span>{{ $user?->roles?->first()?->name }}</span>
+                    </div>
+                </div>
+                <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list"
+                    aria-labelledby="profile-dropdown">
+                    <a href="{{ route('profile.edit') }}" class="dropdown-item preview-item">
+                        <div class="preview-thumbnail">
+                            <div class="preview-icon bg-dark rounded-circle">
+                                <i class="mdi mdi-cog text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="preview-item-content">
+                            <p class="preview-subject ellipsis mb-1 text-small">Account settings</p>
+                        </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ route('profile.edit') }}" class="dropdown-item preview-item">
+                        <div class="preview-thumbnail">
+                            <div class="preview-icon bg-dark rounded-circle">
+                                <i class="mdi mdi-onepassword  text-info"></i>
+                            </div>
+                        </div>
+                        <div class="preview-item-content">
+                            <p class="preview-subject ellipsis mb-1 text-small">Change Password</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </li>
+        {{-- <li class="nav-item profile">
+            <div class="profile-desc">
+                <div class="profile-pic">
+                    <div class="count-indicator">
                         <img class="img-xs rounded-circle " src="/admin_assets/images/faces/face15.jpg" alt="">
                         <span class="count bg-success"></span>
                     </div>
@@ -208,6 +247,44 @@
             </div>
         </li>
         <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('admin.message.index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-message"></i>
+                </span>
+                <span class="menu-title">Messages</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('admin.coupon.index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-ticket"></i>
+                </span>
+                <span class="menu-title">Coupon</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" data-toggle="collapse" href="#ui-blog" aria-expanded="false"
+                aria-controls="ui-blog">
+                <span class="menu-icon">
+                    <i class="mdi mdi-post"></i>
+                </span>
+                <span class="menu-title">Blog</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-blog">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.blog.index') }}">Blogs</a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link"
+                            href="{{ route('admin.taxonomy-tag.index') }}">Tags</a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link"
+                            href="{{ route('admin.taxonomy-category.index') }}">Categories</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item menu-items">
             <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
                 <span class="menu-icon">
                     <i class="mdi mdi-security"></i>
@@ -217,16 +294,13 @@
             </a>
             <div class="collapse" id="auth">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank
-                            Page </a></li>
-                    <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.user.index') }}">All Members</a>
                     </li>
-                    <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.roles.index') }}">Roles</a>
                     </li>
-                    <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a>
+                    <li class="nav-item"> <a class="nav-link"
+                            href="{{ route('admin.user_invite.index') }}">Invite</a>
                     </li>
-                    <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register
-                        </a></li>
                 </ul>
             </div>
         </li>
@@ -245,6 +319,50 @@
                 </span>
                 <span class="menu-title">Settings</span>
             </a>
-        </li>
+        </li> --}}
+
+        @foreach (config('menu') as $item)
+            @php
+                $hasSubmenu = isset($item['submenu']);
+                $showParent = $hasSubmenu
+                    ? collect($item['submenu'])->where('priority', '<=', $userPriority)->isNotEmpty()
+                    : $userPriority >= $item['priority'];
+            @endphp
+
+            @if ($showParent)
+                <li class="nav-item menu-items">
+                    @if ($hasSubmenu)
+                        <a class="nav-link" data-toggle="collapse" href="#menu-{{ Str::slug($item['title']) }}"
+                            aria-expanded="false">
+                            <span class="menu-icon">
+                                <i class="{{ $item['icon'] }}"></i>
+                            </span>
+                            <span class="menu-title">{{ $item['title'] }}</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menu-{{ Str::slug($item['title']) }}">
+                            <ul class="nav flex-column sub-menu">
+                                @foreach ($item['submenu'] as $subItem)
+                                    @if ($userPriority >= $subItem['priority'])
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route($subItem['route']) }}">
+                                                {{ $subItem['title'] }}
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endforeach
+                            </ul>
+                        </div>
+                    @else
+                        <a class="nav-link" href="{{ route($item['route']) }}">
+                            <span class="menu-icon">
+                                <i class="{{ $item['icon'] }}"></i>
+                            </span>
+                            <span class="menu-title">{{ $item['title'] }}</span>
+                        </a>
+                    @endif
+                </li>
+            @endif
+        @endforeach
     </ul>
 </nav>

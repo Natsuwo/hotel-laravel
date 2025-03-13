@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -111,6 +112,13 @@ class PaymentController extends Controller
 
             if ($validated['status'] == 'paid') {
                 $invoice = $payment->first()->invoice;
+                if ($invoice->status == 'paid') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invoice already paid'
+                    ]);
+                }
+
                 $invoice->update([
                     'status' => 'paid'
                 ]);
@@ -118,6 +126,17 @@ class PaymentController extends Controller
                 $reservation = $invoice->reservation;
                 $reservation->update([
                     'status' => 1
+                ]);
+
+                $paymentInstance = $payment->first();
+                $paymentInstance->plusPoint($invoice->amount);
+
+                Transaction::create([
+                    'transaction_date' => Carbon::now(),
+                    'amount' => $invoice->amount,
+                    'type' => 'income',
+                    'category' => 'Booking',
+                    'description' => 'Income from bookingID: ' . $reservation->booking_id,
                 ]);
             }
 

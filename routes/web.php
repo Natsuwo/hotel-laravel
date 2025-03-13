@@ -19,7 +19,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
-})->name('admin.dashboard');
+})->name('admin.dashboard')->middleware('auth');
 
 
 require __DIR__ . '/auth.php';
@@ -37,3 +37,6 @@ require __DIR__ . '/event_calendar.php';
 require __DIR__ . '/inventory.php';
 require __DIR__ . '/setting.php';
 require __DIR__ . '/message.php';
+require __DIR__ . '/blog.php';
+require __DIR__ . '/coupon.php';
+require __DIR__ . '/user.php';

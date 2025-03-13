@@ -35,12 +35,12 @@
             }
         }
 
-        var current = location.pathname;
-        // .split("/")
-        // .slice(-1)[0]
-        // .replace(/^\/|\/$/g, "");
+        var current = location.pathname.split("/").slice(1).join("/");
         $(".nav li a", sidebar).each(function () {
             var $this = $(this);
+            if ($this.parents(".nav-item").hasClass("active")) {
+                return;
+            }
             addActiveClass($this);
         });
 

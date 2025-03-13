@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationsController;
@@ -39,4 +40,5 @@ Route::middleware('auth:guest')->group(function () {
 
   Route::get('/payment/{id}', [PaymentController::class, 'show'])->name('api.payment.show');
   Route::put('/payment/{id}', [PaymentController::class, 'update'])->name('api.payment.update');
+  Route::get('/coupon/{id}', [CouponController::class, 'getOne'])->name('api.coupon.show');
 });

@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <form class="forms-sample" role="form" method="POST" action="{{ route('admin.floor.update', ['id' => $record->id]) }}">
+    <form class="forms-sample" role="form" method="POST" action="{{ route('admin.floor.update', $record->id) }}">
         @csrf
         @method('PUT')
         <div class="row">

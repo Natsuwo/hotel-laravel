@@ -32,6 +32,20 @@
                                 <textarea class="form-control" id="description" name="name[description]">{{ old('name.description', $settings['description'] ?? '') }}</textarea>
                             </div>
                             <div class="form-group">
+                                <label for="phone">Company Phone</label>
+                                <input type="phone" class="form-control" id="phone" name="name[phone]"
+                                    value="{{ old('name.phone', $settings['phone'] ?? '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Company Email</label>
+                                <input type="email" class="form-control" id="email" name="name[email]"
+                                    value="{{ old('name.email', $settings['email'] ?? '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <textarea class="form-control" id="address" name="name[address]">{{ old('name.address', $settings['address'] ?? '') }}</textarea>
+                            </div>
+                            <div class="form-group">
                                 <label for="tax">Tax (%)</label>
                                 <input type="number" class="form-control" id="tax" name="name[tax]"
                                     value="{{ old('name.tax', $settings['tax'] ?? '') }}" step="0.01">

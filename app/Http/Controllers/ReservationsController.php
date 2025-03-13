@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderSucceed;
 use App\Models\Reservations;
 use App\Http\Requests\Reservation\StoreRequest as ReservationStoreRequest;
 use App\Http\Requests\Reservation\UpdateRequest as ReservationUpdateRequest;
+use App\Models\Coupons;
 use App\Models\Guests;
 use App\Models\Invoices;
 use App\Models\Payment;
@@ -12,6 +14,7 @@ use App\Models\Rooms;
 use App\Models\Settings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReservationsController extends Controller
 {
@@ -37,77 +40,104 @@ class ReservationsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    /**
+     * Transaction flow: begin, rollback, commit
+     */
     public function store(ReservationStoreRequest $request)
     {
+        try {
+            DB::beginTransaction();
 
-        $bookingId = Reservations::generateBookingId();
-        $reservation = Reservations::create([
-            'room_id' => $request->room_id,
-            'booking_id' => $bookingId,
-            'guest_id' => $request->guest_id,
-            'check_in' => Carbon::parse($request->check_in)->format('Y-m-d\TH:i'),
-            'check_out' => Carbon::parse($request->check_out)->format('Y-m-d\TH:i'),
-            'duration' => $request->duration,
-            'adults' => $request->adults,
-            'children' => $request->child,
-            'notes' => $request->notes,
-            'status' => $request->status ? $request->status : 0, // 0: pending, 1: confirm, 2: rejected, 3: cancelled
-        ]);
-
-        if ($reservation->id) {
-            $vat = $request->vat_price ? $request->vat_price : 0; // 10%
-            $tax = $request->tax_price ? $request->tax_price : 0; // 5%
-            $extras = 0;
-            $total = $request->total_price ? $request->total_price : $request->price * $request->duration;
-            $invoice =  Invoices::createInvoice([
-                'guest_id' => $request->guest_id,
+            $bookingId = Reservations::generateBookingId();
+            $reservation = Reservations::create([
                 'room_id' => $request->room_id,
-                'booking_id' => $reservation->id,
-                'coupon_id' => null,
-                'price_per_night' => $request->price,
-                'extras' => $extras,
-                'vat' => $vat,
-                'tax' => $tax,
-                'amount' => $total,
-                'status' => 'unpaid',
+                'booking_id' => $bookingId,
+                'guest_id' => $request->guest_id,
+                'check_in' => Carbon::parse($request->check_in)->format('Y-m-d\TH:i'),
+                'check_out' => Carbon::parse($request->check_out)->format('Y-m-d\TH:i'),
+                'duration' => $request->duration,
+                'adults' => $request->adults,
+                'children' => $request->child,
+                'notes' => $request->notes,
+                'status' => $request->status ? $request->status : 0, // 0: pending, 1: confirm, 2: rejected, 3: cancelled
             ]);
 
-            $reservation->invoice_id = $invoice->id;
+            $guest = Guests::find($request->guest_id);
 
-            // create payment
+            if ($reservation->id) {
+                $vat = $request->vat_price ?? 0; // 10%
+                $tax = $request->tax_price ?? 0; // 5%
+                $extras = $request->extras ?? 0;
+                $total = $request->total_price;
+                $membership = $guest->guestMembership();
 
-            if ($request->session_id && $request->payment_method == 'card') {
-                $payment = Payment::create([
-                    'invoice_id' => $invoice->id,
-                    'transaction_id' => $request->session_id,
+                $invoice =  Invoices::createInvoice([
+                    'guest_id' => $request->guest_id,
+                    'room_id' => $request->room_id,
+                    'booking_id' => $reservation->id,
+                    'discount' => $membership ? $membership->discount : 0,
+                    'coupon_id' => $request->coupon_id ?? null,
+                    'price_per_night' => $request->price,
+                    'nights' => $request->duration,
+                    'extras' => $extras,
+                    'vat' => $vat,
+                    'tax' => $tax,
+                    'amount' => $total,
                     'status' => 'unpaid',
-                    'payment_method' => $request->payment_method,
-                    'paid_at' => null,
                 ]);
 
-                $reservation->payment_id = $payment->id;
+                if ($request->coupon_id) {
+                    $coupon = Coupons::find($request->coupon_id);
+                    $coupon->createCouponItem($request->guest_id, $invoice->id);
+                }
+
+                $reservation->invoice_id = $invoice->id;
+
+                // create payment
+
+                if ($request->session_id && $request->payment_method == 'card') {
+                    $payment = Payment::create([
+                        'invoice_id' => $invoice->id,
+                        'transaction_id' => $request->session_id,
+                        'status' => 'unpaid',
+                        'payment_method' => $request->payment_method,
+                        'paid_at' => null,
+                    ]);
+
+                    $reservation->payment_id = $payment->id;
+                }
+                event(new OrderSucceed($invoice));
             }
-        }
 
 
+            DB::commit();
 
-        // if ($request->status == 1 || $request->status == 0) {
-        //     Rooms::updateStatus($request->room_id, 'occupied');
-        // }
+            // if ($request->status == 1 || $request->status == 0) {
+            //     Rooms::updateStatus($request->room_id, 'occupied');
+            // }
 
-        if (request()->is('api/*')) {
+            if (request()->is('api/*')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Reservation created successfully',
+                    'data' => $reservation,
+                ]);
+            }
+
+            return redirect()->route('admin.reservation.index')
+                ->with(
+                    $reservation ? 'success' : 'error',
+                    $reservation ? 'Reservation created successfully' : 'Failed to create reservation'
+                );
+        } catch (\Exception $e) {
+            DB::rollback();
             return response()->json([
-                'success' => true,
-                'message' => 'Reservation created successfully',
-                'data' => $reservation,
+                'success' => false,
+                'message' => 'Failed to create reservation' . $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
         }
-
-        return redirect()->route('admin.reservation.index')
-            ->with(
-                $reservation ? 'success' : 'error',
-                $reservation ? 'Reservation created successfully' : 'Failed to create reservation'
-            );
     }
 
     /**
@@ -188,6 +218,11 @@ class ReservationsController extends Controller
             'room.roomType.galleries.gallery',
         ])->findOrFail($id);
 
+        // if ($reservation->invoice) {
+        //     $reservation->invoice = $reservation->invoice->calculateCoupon();
+        //     dd($reservation->invoice);
+        // }
+
         $reservation->thumbnail = $reservation?->room?->roomType?->galleries?->first()?->gallery?->thumbUrl();
         return response()->json([
             'success' => true,
@@ -197,14 +232,20 @@ class ReservationsController extends Controller
 
     public function getByGuestId(string $id)
     {
+        $limit = request()->query('limit', 10);
+        $page = request()->query('page', 1);
         $reservation = Reservations::with([
             'room',
             'invoice',
             'invoice.payment',
             'room.roomType.galleries.gallery',
         ])->where('guest_id', $id)
+            ->orderBy('updated_at', 'desc')
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
             ->get();
 
+        $totalPage = ceil(Reservations::where('guest_id', $id)->count() / $limit);
         $reservation = $reservation->map(function ($item) {
             $item->thumbnail = $item?->room?->roomType?->galleries?->first()?->gallery?->thumbUrl();
             return $item;
@@ -212,6 +253,7 @@ class ReservationsController extends Controller
         return response()->json([
             'success' => true,
             'data' => $reservation,
+            'total_page' => $totalPage,
         ]);
     }
 
@@ -229,81 +271,86 @@ class ReservationsController extends Controller
      */
     public function update(ReservationUpdateRequest $request, string $id)
     {
-        $reservation = Reservations::findOrFail($id);
-        $check_in = $request->check_in;
-        $check_out = $request->check_out;
-        $duration = $request->duration ? $request->duration : abs(Carbon::parse($check_out)->diffInDays(Carbon::parse($check_in)));
-
-        $reservation->update(array_filter([
-            'room_id' => $request->room_id,
-            'guest_id' => $request->guest_id,
-            'check_in' => $request->check_in ? Carbon::parse($request->check_in)->format('Y-m-d\TH:i') : null,
-            'check_out' => $request->check_out ? Carbon::parse($request->check_out)->format('Y-m-d\TH:i') : null,
-            'duration' => $duration,
-            'adults' => $request->adults,
-            'children' => $request->child,
-            'notes' => $request->notes,
-            'status' => $request->status,
-        ], function ($value) {
-            return !is_null($value);
-        }));
+        try {
+            DB::beginTransaction();
+            $reservation = Reservations::findOrFail($id);
+            $check_in = $request->check_in;
+            $check_out = $request->check_out;
+            $duration = $request->duration;
+            $total_discount = $request->total_discount ?? 0;
 
 
-
-        $settings = Settings::whereIn('name', ['vat', 'tax'])->get();
-        $invoices = Invoices::where('booking_id', $reservation->id);
-        $total_price = $request->total_price ?
-            $request->total_price :
-            $reservation->room->roomType->price_per_night * $duration;
-        $tax_price = $request->tax_price ? $request->tax_price : $total_price * $settings->where('name', 'tax')->first()->value / 100;
-        $vat_price = $request->vat_price ? $request->vat_price : $total_price * $settings->where('name', 'vat')->first()->value / 100;
-
-
-        if (!$request->total_price) {
-            $total_price = $total_price + $vat_price + $tax_price;
-        }
-
-
-        $paid_invoices = $invoices->where('status', 'paid')->get();
-        $total_paid = $paid_invoices->sum('amount');
-        $new_price_must_pay = $total_price - $total_paid;
-        $new_tax_price = $tax_price - $paid_invoices->sum('tax');
-        $new_vat_price = $vat_price - $paid_invoices->sum('vat');
+            $reservation->update(array_filter([
+                'room_id' => $request->room_id,
+                'guest_id' => $request->guest_id,
+                'check_in' => $check_in ? Carbon::parse($check_in)->format('Y-m-d\TH:i') : null,
+                'check_out' => $check_out ? Carbon::parse($check_out)->format('Y-m-d\TH:i') : null,
+                'duration' => $duration,
+                'adults' => $request->adults,
+                'children' => $request->child,
+                'notes' => $request->notes,
+                'status' => $request->status,
+            ], function ($value) {
+                return !is_null($value);
+            }));
 
 
-        if ($new_price_must_pay > 0) {
-            $invoice =  Invoices::create([
-                'guest_id' => $reservation->guest_id,
-                'room_id' => $reservation->room_id,
-                'booking_id' => $reservation->id,
-                'coupon_id' => null,
-                'price_per_night' => $reservation->room->roomType->price_per_night,
-                'extras' => 0,
-                'vat' => $new_vat_price,
-                'tax' => $new_tax_price,
-                'amount' => $new_price_must_pay,
-                'status' => 'unpaid',
-            ]);
+            $invoices = Invoices::where('booking_id', $reservation->id);
+            $total_price = $request->total_price;
+            $tax_price = $request->tax_price;
+            $vat_price = $request->vat_price;
 
-            $invoice->reservation =  $reservation;
-            $reservation->status = 0;
-            $reservation->save();
-        }
+            $paid_invoices = $invoices->where('status', 'paid')->get();
+            $total_paid = $paid_invoices->sum('amount');
+            $new_price_must_pay = $total_price - $total_paid - $total_discount;
+            $new_tax_price = $tax_price - $paid_invoices->sum('tax');
+            $new_vat_price = $vat_price - $paid_invoices->sum('vat');
 
-        if (request()->is('api/*')) {
+
+            if ($new_price_must_pay > 0.5) {
+                $nights = $duration > $reservation->duration ? $duration - $reservation->duration : 0;
+                $invoice =  Invoices::create([
+                    'guest_id' => $reservation->guest_id,
+                    'room_id' => $reservation->room_id,
+                    'booking_id' => $reservation->id,
+                    'coupon_id' => $request->coupon_id ?? null,
+                    'price_per_night' => $reservation->room->roomType->price_per_night,
+                    'nights' => $nights,
+                    'extras' => 0,
+                    'vat' => $new_vat_price,
+                    'tax' => $new_tax_price,
+                    'amount' => $new_price_must_pay,
+                    'status' => 'unpaid',
+                ]);
+
+                $invoice->reservation =  $reservation;
+                $reservation->status = 0;
+                $reservation->save();
+            }
+
+            DB::commit();
+
+            if (request()->is('api/*')) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $invoice ?? null,
+                    'message' => 'Reservation updated successfully',
+                ]);
+            }
+
+            return redirect()->route('admin.reservation.index')
+                ->with(
+                    $reservation ? 'success' : 'error',
+                    $reservation ? 'Reservation updated successfully' : 'Failed to update reservation'
+                );
+        } catch (\Exception $e) {
+            DB::rollback();
             return response()->json([
-                'success' => true,
-                'data' => $invoice ?? null,
-                'message' => 'Reservation updated successfully',
+                'success' => false,
+                'message' => 'Failed to update reservation',
+                'error' => $e->getMessage(),
             ]);
         }
-
-
-        return redirect()->route('admin.reservation.index')
-            ->with(
-                $reservation ? 'success' : 'error',
-                $reservation ? 'Reservation updated successfully' : 'Failed to update reservation'
-            );
     }
 
     /**
