@@ -1,12 +1,12 @@
 <?php
 
 return [
-  [
-    'title' => 'Dashboard',
-    'icon' => 'mdi mdi-speedometer',
-    'route' => 'admin.dashboard',
-    'priority' => 25,
-  ],
+  // [
+  //   'title' => 'Dashboard',
+  //   'icon' => 'mdi mdi-speedometer',
+  //   'route' => 'admin.dashboard',
+  //   'priority' => 25,
+  // ],
   [
     'title' => 'Reservation',
     'icon' => 'mdi mdi-calendar',

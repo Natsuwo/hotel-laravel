@@ -11,10 +11,24 @@
         <div class="row">
             <div class="col-md-12">
                 <h2>Messages</h2>
-                <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-end mb-3">
                     <a href="{{ route('admin.message.create') }}" class="btn btn-success">Create</a>
                 </div>
-                <table class="table table-striped">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('filter') == 'unread' ? 'active' : '' }}"
+                            href="{{ route('admin.message.index', ['filter' => 'unread']) }}">Unread</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('filter') == 'readed' ? 'active' : '' }}"
+                            href="{{ route('admin.message.index', ['filter' => 'readed']) }}">Read</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('filter') == 'all' ? 'active' : '' }}"
+                            href="{{ route('admin.message.index', ['filter' => 'all']) }}">All</a>
+                    </li>
+                </ul>
+                <table class="table table-striped mt-3">
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="checkAll"></th>

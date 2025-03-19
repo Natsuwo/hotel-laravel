@@ -1,4 +1,4 @@
-<div class="col-md-8 grid-margin stretch-card">
+<div class="col-md-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <div class="d-flex flex-row justify-content-between">
@@ -17,7 +17,6 @@
                             icon-bg="bg-warning" time="15 minutes ago" value="23" icon="mdi mdi-bed-empty" />
                         <x-room-status title="Not Ready" description="The room is under maintenance."
                             icon-bg="bg-danger" time="15 minutes ago" value="16" icon="mdi mdi-bed-empty" />
-
                     </div>
                 </div>
             </div>

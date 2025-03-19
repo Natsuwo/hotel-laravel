@@ -199,7 +199,7 @@
                 '<div class="d-flex justify-content-center align-items-center" style="height: 100%;"><i class="mdi mdi-loading mdi-spin" style="font-size: 30px;"></i> Loading...</div>'
             );
             $.ajax({
-                url: `{{ route('admin.room_types.show', '') }}/${roomId}`,
+                url: `{{ route('admin.room_types.getRoomTypesById', '') }}/${roomId}`,
                 success: function(response) {
                     if (response?.html) {
                         $('#room-detail-content').html(response?.html);

@@ -24,11 +24,11 @@
         <div class="d-flex justify-content-between align-items-start">
             <h3 class="card-title">Room Details</h3>
             <div class="d-flex">
-                <a href="{{ route('admin.room_types.edit', ['id' => $room->id]) }}" class="mr-2">
+                <a href="{{ route('admin.room_types.edit', $room->id) }}" class="mr-2">
                     <button class="btn btn-success">
                         Edit
                     </button></a>
-                <form action="{{ route('admin.room_types.destroy', ['id' => $room->id]) }}" method="POST"
+                <form action="{{ route('admin.room_types.destroy', $room->id) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to delete this room?');">
                     @csrf
                     @method('DELETE')

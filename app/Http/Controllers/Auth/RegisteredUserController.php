@@ -24,12 +24,16 @@ class RegisteredUserController extends Controller
     public function create(): RedirectResponse|View
     {
         try {
-            $invite_code = request()->get('invite_code');
-            if (!$invite_code) {
+            $invite_code = request()->get('invite_code') ?? '';
+            $user_count = UserRoles::count();
+            if (!$invite_code && $user_count > 0) {
                 return redirect(route('login', absolute: false))
                     ->with('error', 'You need to invite to create account.');
             }
-            $invite = UserInvite::checkInviteCode($invite_code);
+            $invite = null;
+            if ($invite_code)
+                $invite = UserInvite::checkInviteCode($invite_code);
+
             return view('auth.register', compact('invite'));
         } catch (\Exception $e) {
             return redirect(route('login', absolute: false))
@@ -99,7 +103,7 @@ class RegisteredUserController extends Controller
 
             Auth::login($user);
 
-            return redirect(route('admin.dashboard', absolute: false));
+            return redirect(route('admin.reservation.index', absolute: false));
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', $e->getMessage());

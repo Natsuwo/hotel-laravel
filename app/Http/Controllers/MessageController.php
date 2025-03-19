@@ -14,7 +14,14 @@ class MessageController extends Controller
      */
     public function index()
     {
-        $messages = Message::all();
+        $filter = request()->query('filter') ?? 'unread';
+        if ($filter === 'readed') {
+            $messages = Message::where('is_read', true)->get();
+        } elseif ($filter === 'unread') {
+            $messages = Message::where('is_read', false)->get();
+        } else {
+            $messages = Message::all();
+        }
         return view('admin.pages.message.index', compact('messages'));
     }
 
@@ -84,6 +91,17 @@ class MessageController extends Controller
     {
         $message = Message::findOrFail($id);
         $message->delete();
+        return redirect()->route('admin.message.index');
+    }
+
+    /**
+     * Mark the message as read.
+     */
+
+    public function markAsRead(string $id)
+    {
+        $message = Message::findOrFail($id);
+        $message->update(['is_read' => true]);
         return redirect()->route('admin.message.index');
     }
 }

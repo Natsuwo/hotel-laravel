@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::guard('web')->check()) {
+        return redirect()->route('admin.reservation.index');
+    }
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {

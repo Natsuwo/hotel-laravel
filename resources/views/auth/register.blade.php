@@ -16,14 +16,19 @@
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
-                value="{{ old('email', $invite->email ?? '') }}" readonly />
+            @if ($invite?->email)
+                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
+                    value="{{ old('email', $invite?->email ?? '') }}" />
+            @else
+                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
+                    :value="old('email')" />
+            @endif
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <!-- Invite Code (not required) -->
         <x-text-input id="invite_code" class="block mt-1 w-full" type="hidden" name="invite_code"
-            value="{{ old('invite_code', $invite->invite_code ?? '') }}" />
+            value="{{ old('invite_code', $invite?->invite_code ?? '') }}" />
 
         <!-- Password -->
         <div class="mt-4">
